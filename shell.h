@@ -6,6 +6,6 @@
 #include <string.h>
 #include <assert.h>
 #include <signal.h>
-void interpreter(int argc, char *argc[]);
+void interpreter(int argc, char *argv[]);
 
 #endif
