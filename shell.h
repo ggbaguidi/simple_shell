@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <signal.h>
+#include <sys/wait.h>
 void interpreter(int argc, char *argv[]);
 
 #endif
