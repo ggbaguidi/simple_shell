@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <signal.h>
 #include <sys/wait.h>
+
+void prompt(const char *str);
 void interpreter(int argc, char *argv[]);
 char **split(char *str, const char *delim);
 

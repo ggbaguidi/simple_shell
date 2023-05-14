@@ -14,14 +14,14 @@
 void interpreter(int argc, char *argv[])
 {
 	char **args = NULL;
-	char cmd[1024];
+	char *cmd = malloc(sizeof(char));
 	char *env[] = { NULL };
+	size_t len = 0;
 
 	while (argc || 1)
 	{
-		printf("#cisfun$ ");
-		fflush(stdout);
-		if (fgets(cmd, sizeof(cmd), stdin) != NULL)
+		prompt("#cisfun$");
+		if (getline(&cmd, &len, stdin) != -1)
 		{
 			cmd[strcspn(cmd, "\n")] = '\0';
 			args = split(cmd, " ");
@@ -42,6 +42,7 @@ void interpreter(int argc, char *argv[])
 		free(args);
 
 	}
+	free(cmd);
 }
 
 /**
