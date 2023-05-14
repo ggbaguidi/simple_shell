@@ -39,8 +39,9 @@ void interpreter(int argc, char *argv[])
 		else
 			break;
 
+		free(args);
+
 	}
-	free(args);
 }
 
 /**
