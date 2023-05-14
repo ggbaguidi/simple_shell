@@ -8,5 +8,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 void interpreter(int argc, char *argv[]);
+char **split(char *str, const char *delim);
 
 #endif

@@ -13,7 +13,7 @@
  */
 void interpreter(int argc, char *argv[])
 {
-	char *args[] = { NULL, NULL };
+	char **args = NULL;
 	char cmd[1024];
 	char *env[] = { NULL };
 
@@ -24,7 +24,7 @@ void interpreter(int argc, char *argv[])
 		if (fgets(cmd, sizeof(cmd), stdin) != NULL)
 		{
 			cmd[strcspn(cmd, "\n")] = '\0';
-			args[0] = cmd;
+			args = split(cmd, " ");
 			if (fork() == 0)
 			{
 				if (execve(args[0], args, env) == -1)
@@ -40,4 +40,32 @@ void interpreter(int argc, char *argv[])
 			break;
 
 	}
+	free(args);
+}
+
+/**
+ * split - divide a string in tokens(divise une chaine de caracteres
+ * mots(tokens)
+ * @str: a string a char pointer
+ * @delim: a delimiter a char pointer
+ * Return: a pointer of pointer of char
+ */
+
+char **split(char *str, const char *delim)
+{
+	char **tokens = malloc(sizeof(char *));
+	char *token = strtok(str, delim);
+	int count = 0;
+
+	while (token != NULL)
+	{
+		count++;
+		tokens = realloc(tokens, sizeof(char *) * count);
+		tokens[count - 1] = token;
+		token = strtok(NULL, delim);
+	}
+	tokens = realloc(tokens, sizeof(char *) * (count + 1));
+	tokens[count] = NULL;
+
+	return (tokens);
 }
