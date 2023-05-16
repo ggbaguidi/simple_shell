@@ -15,7 +15,7 @@ void interpreter(int argc, char *argv[])
 {
 	char **args = NULL;
 	char *cmd = malloc(sizeof(char));
-	char *env[] = { NULL };
+	char *envp[] = { NULL };
 	size_t len = 0;
 
 	while (argc || 1)
@@ -25,9 +25,10 @@ void interpreter(int argc, char *argv[])
 		{
 			cmd[strcspn(cmd, "\n")] = '\0';
 			args = split(cmd, " ");
-			if (fork() == 0)
+			printf("%s\n", args[0]);
+			if ((fork() == 0) && (args[0] != NULL))
 			{
-				if (execve(args[0], args, env) == -1)
+				if (execve(args[0], args, envp) == -1)
 				{
 					perror(argv[0]);
 					exit(EXIT_FAILURE);
@@ -35,12 +36,14 @@ void interpreter(int argc, char *argv[])
 			}
 			else
 				wait(NULL);
+			if (args != NULL)
+			{
+				free(args);
+				args = NULL;
+			}
 		}
 		else
 			break;
-
-		free(args);
-
 	}
 	free(cmd);
 }
