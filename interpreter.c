@@ -25,10 +25,9 @@ void interpreter(int argc, char *argv[])
 		{
 			cmd[strcspn(cmd, "\n")] = '\0';
 			args = split(cmd, " ");
-			printf("%s\n", args[0]);
 			if ((fork() == 0) && (args[0] != NULL))
 			{
-				if (execve(args[0], args, envp) == -1)
+				if (execvpe(args[0], args, envp) == -1)
 				{
 					perror(argv[0]);
 					exit(EXIT_FAILURE);
