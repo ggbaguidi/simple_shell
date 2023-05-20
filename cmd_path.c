@@ -25,22 +25,25 @@ char *_getenv(void)
 }
 
 /**
- * count_dir - return the number of dir contained in path
+ * count_str - return the number of dir contained in path
  *
+ * @str: string
  *
+ * @d: delimiter
  * Return: a int (SUCCESS)
  */
 
-int count_dir(void)
+int count_str(char *str, char const *d)
 {
-	char *path = PATH;
-	char *dir = strtok(path, ":");
+	char **p = split(str, d);
 	int cpt = 0;
 
-	while (dir != NULL)
+	if (p == NULL)
+		return cpt;
+	while (*p != NULL)
 	{
 		cpt++;
-		dir = strtok(NULL, ":");
+		p++;
 	}
 	return (cpt);
 }

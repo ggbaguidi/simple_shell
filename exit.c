@@ -3,9 +3,10 @@
 /**
  * exit_shell - exit on the shell
  *
+ * @s: status
  * Return (EXIT_SUCCESS)
  */
-void exit_shell(void)
+void exit_shell(int s)
 {
-	exit(EXIT_SUCCESS);
+	exit(s);
 }

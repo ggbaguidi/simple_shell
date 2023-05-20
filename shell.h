@@ -19,13 +19,13 @@ void prompt(const char *str);
 void interpreter(int argc, char *argv[]);
 char **split(char *str, const char *delim);
 char *_getenv(void);
-int count_dir(void);
-int execvpe(char *file, char *argv[], char *envp[]);
+int count_str(char *str, char const *d);
 char *is_exist(char *file);
-void exit_shell(void);
+void exit_shell(int s);
 int external_func(char const *cmd);
 void _printf(char *str);
 void print_env(void);
-char* my_getline(void);
+char *my_getline(void);
+char *my_strtok(char *str, const char *delim);
 
 #endif

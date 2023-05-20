@@ -65,7 +65,7 @@ void interpreter(int argc, char *argv[])
 char **split(char *str, const char *delim)
 {
 	char **tokens = malloc(sizeof(char *));
-	char *token = strtok(str, delim);
+	char *token = my_strtok(str, delim);
 	int count = 0;
 
 	while (token != NULL)
@@ -73,7 +73,7 @@ char **split(char *str, const char *delim)
 		count++;
 		tokens = realloc(tokens, sizeof(char *) * count);
 		tokens[count - 1] = token;
-		token = strtok(NULL, delim);
+		token = my_strtok(NULL, delim);
 	}
 	tokens = realloc(tokens, sizeof(char *) * (count + 1));
 	tokens[count] = NULL;
@@ -90,13 +90,20 @@ char **split(char *str, const char *delim)
 int external_func(char const *cmd)
 {
 	char *c = malloc(sizeof(char));
+	char **r;
 
 	strcpy(c, cmd);
+	r = split(c, " ");
 	if (strcmp(c, "\n") == 0)
 		exit(EXIT_FAILURE);
 	c[strcspn(c, "\n")] = '\0';
-	if (strcmp(c, "exit") == 0)
-		exit_shell();
+	if (strncmp(c, "exit", 4) == 0)
+	{
+		if (r[1] == NULL)
+			exit_shell(EXIT_SUCCESS);
+		else
+			exit_shell(atoi(r[1]));
+	}
 	if (strcmp(c, "env") == 0)
 	{
 		print_env();
@@ -105,4 +112,3 @@ int external_func(char const *cmd)
 	}
 	return (-1);
 }
-
