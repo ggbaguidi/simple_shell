@@ -14,35 +14,42 @@
 void interpreter(int argc, char *argv[])
 {
 	char **args = NULL;
-	char *cmd = malloc(sizeof(char));
-	char *envp[] = { NULL };
-	size_t len = 0;
+	char *cmd = malloc(sizeof(char)), *envp[] = { NULL }, *tmp = NULL;
+/*	size_t len = 0;*/
+	pid_t pid = 1;
+	int status;
 
 	while (argc || 1)
 	{
 		prompt("#cisfun$");
-		if (getline(&cmd, &len, stdin) != -1)
+		cmd = my_getline();
+		if (cmd != NULL)
 		{
+			if (external_func(cmd) == 0)
+				continue;
 			cmd[strcspn(cmd, "\n")] = '\0';
 			args = split(cmd, " ");
-			if ((fork() == 0) && (args[0] != NULL))
+			tmp = is_exist(args[0]);
+			if (strcmp(tmp, "none") != 0)
 			{
-				if (execvpe(args[0], args, envp) == -1)
+				pid = fork();
+				args[0] = tmp;
+				if (pid == 0)
 				{
-					perror(argv[0]);
-					exit(EXIT_FAILURE);
+					if (execve(args[0], args, envp) == -1)
+					{
+						perror(argv[0]);
+						exit(EXIT_FAILURE);
+					}
 				}
+				else
+					waitpid(pid, &status, 0);
 			}
 			else
-				wait(NULL);
-			if (args != NULL)
-			{
-				free(args);
-				args = NULL;
-			}
+				exit(EXIT_FAILURE);
 		}
 		else
-			break;
+			exit(EXIT_FAILURE);
 	}
 	free(cmd);
 }
@@ -73,3 +80,29 @@ char **split(char *str, const char *delim)
 
 	return (tokens);
 }
+
+/**
+ * external_func - ....
+ * @cmd: ....
+ * Return: ...
+ */
+
+int external_func(char const *cmd)
+{
+	char *c = malloc(sizeof(char));
+
+	strcpy(c, cmd);
+	if (strcmp(c, "\n") == 0)
+		exit(EXIT_FAILURE);
+	c[strcspn(c, "\n")] = '\0';
+	if (strcmp(c, "exit") == 0)
+		exit_shell();
+	if (strcmp(c, "env") == 0)
+	{
+		print_env();
+		free(c);
+		return (0);
+	}
+	return (-1);
+}
+

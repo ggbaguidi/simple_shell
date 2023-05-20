@@ -14,9 +14,7 @@ int execvpe(char *file, char *argv[], char *envp[])
 {
 	const char *p, *z, *path = PATH;
 	size_t l, k;
-	int seen_eacces = 0;
 
-	errno = ENOENT;
 	if (!*file)
 		return (-1);
 	if (strchr(file, '/'))
@@ -26,7 +24,6 @@ int execvpe(char *file, char *argv[], char *envp[])
 	k = strnlen(file, NAME_MAX + 1);
 	if (k > NAME_MAX)
 	{
-		errno = ENAMETOOLONG;
 		return (-1);
 	}
 	l = strnlen(path, PATH_MAX - 1) + 1;
@@ -46,9 +43,11 @@ int execvpe(char *file, char *argv[], char *envp[])
 		memcpy(b + (z - p) + (z > p), file, k + 1);
 		execve(b, argv, envp);
 		if (!*z++)
+		{
+			printf("break\n");
 			break;
+		}
 	}
-	if (seen_eacces)
-		errno = EACCES;
+	printf("Sorti !!\n");
 	return (-1);
 }

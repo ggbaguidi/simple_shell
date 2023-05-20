@@ -16,6 +16,7 @@ char *_getenv(void)
 		if (strncmp(*env, "PATH=", 5) == 0)
 		{
 			dirs = *env + 5;
+		/*	strcat(dirs, ":");*/
 			break;
 		}
 		env++;
@@ -24,14 +25,22 @@ char *_getenv(void)
 }
 
 /**
- * cmd_path - return the path of command
+ * count_dir - return the number of dir contained in path
  *
- * @cmd: a command executed as a char pointer
  *
- * Return: a char pointer (SUCCESS)
+ * Return: a int (SUCCESS)
  */
 
-char *cmd_path(char *cmd)
+int count_dir(void)
 {
-	return (cmd);
+	char *path = PATH;
+	char *dir = strtok(path, ":");
+	int cpt = 0;
+
+	while (dir != NULL)
+	{
+		cpt++;
+		dir = strtok(NULL, ":");
+	}
+	return (cpt);
 }

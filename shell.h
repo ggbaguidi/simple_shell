@@ -14,11 +14,18 @@
 extern char **environ;
 #define ENVIRON environ
 #define PATH _getenv()
+#define BUFFER_SIZE 256
 void prompt(const char *str);
 void interpreter(int argc, char *argv[]);
 char **split(char *str, const char *delim);
 char *_getenv(void);
-char *cmd_path(char *cmd);
+int count_dir(void);
 int execvpe(char *file, char *argv[], char *envp[]);
+char *is_exist(char *file);
+void exit_shell(void);
+int external_func(char const *cmd);
+void _printf(char *str);
+void print_env(void);
+char* my_getline(void);
 
 #endif
