@@ -39,7 +39,7 @@ int count_str(char *str, char const *d)
 	int cpt = 0;
 
 	if (p == NULL)
-		return cpt;
+		return (cpt);
 	while (*p != NULL)
 	{
 		cpt++;
