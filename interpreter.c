@@ -1,57 +1,49 @@
 #include "shell.h"
-
 /**
- * interpreter - UNIX command line interpreter
- *
- * SIMPLE SHELL 0.1
- *
- * @argc: the number of arguments of command line(argc donne
- * le nombre d'éléments de la ligne de commande)
- * @argv: the array of string(argv contient ces éléments sous
- * la forme d'un tableau de chaînes de caractères)
- * Return: None (SUCCESS)
+ * execute - execute a command with its entire path variables.
+ * @data: a pointer to the program's data
+ * Return: If sucess returns zero, otherwise, return -1.
  */
-void interpreter(int argc, char *argv[])
+int execute(data_of_program *data)
 {
-	char **args = NULL;
-	char *cmd = malloc(sizeof(char)), *envp[] = { NULL }, *tmp = NULL;
-/*	size_t len = 0;*/
-	pid_t pid = 1;
-	int status;
+	int retval = 0, status;
+	pid_t pidd;
 
-	while (argc || 1)
-	{
-		prompt("#cisfun$");
-		cmd = my_getline();
-		if (cmd != NULL)
-		{
-			if (external_func(cmd) == 0)
-				continue;
-			cmd[strcspn(cmd, "\n")] = '\0';
-			args = split(cmd, " ");
-			tmp = is_exist(args[0]);
-			if (strcmp(tmp, "none") != 0)
-			{
-				pid = fork();
-				args[0] = tmp;
-				if (pid == 0)
-				{
-					if (execve(args[0], args, envp) == -1)
-					{
-						perror(argv[0]);
-						exit(EXIT_FAILURE);
-					}
-				}
-				else
-					waitpid(pid, &status, 0);
-			}
-			else
-				exit(EXIT_FAILURE);
+	/* check for program in built ins */
+	retval = builtins_list(data);
+	if (retval != -1)/* if program was found in built ins */
+		return (retval);
+
+	/* check for program file system */
+	retval = find_program(data);
+	if (retval)
+	{/* if program not found */
+		return (retval);
+	}
+	else
+	{/* if program was found */
+		pidd = fork(); /* create a child process */
+		if (pidd == -1)
+		{ /* if the fork call failed */
+			perror(data->command_name);
+			exit(EXIT_FAILURE);
+		}
+		if (pidd == 0)
+		{/* I am the child process, I execute the program*/
+			retval = execve(data->tokens[0], data->tokens, data->env);
+			if (retval == -1) /* if error when execve*/
+				perror(data->command_name), exit(EXIT_FAILURE);
 		}
 		else
-			exit(EXIT_FAILURE);
+		{/* I am the father, I wait and check the exit status of the child */
+			wait(&status);
+			if (WIFEXITED(status))
+				errno = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				errno = 128 + WTERMSIG(status);
+		}
 	}
-	free(cmd);
+	return (0);
 }
 
 /**
@@ -79,36 +71,4 @@ char **split(char *str, const char *delim)
 	tokens[count] = NULL;
 
 	return (tokens);
-}
-
-/**
- * external_func - ....
- * @cmd: ....
- * Return: ...
- */
-
-int external_func(char const *cmd)
-{
-	char *c = malloc(sizeof(char));
-	char **r;
-
-	strcpy(c, cmd);
-	r = split(c, " ");
-	if (strcmp(c, "\n") == 0)
-		exit(EXIT_FAILURE);
-	c[strcspn(c, "\n")] = '\0';
-	if (strncmp(c, "exit", 4) == 0)
-	{
-		if (r[1] == NULL)
-			exit_shell(EXIT_SUCCESS);
-		else
-			exit_shell(atoi(r[1]));
-	}
-	if (strcmp(c, "env") == 0)
-	{
-		print_env();
-		free(c);
-		return (0);
-	}
-	return (-1);
 }
